@@ -65,16 +65,7 @@
                 </div>
             </div>
             <div class="content2">
-                <table  id = "listtable" style="width:100%">
-                    <tr class="col">
-                      <th >Time</th>
-                      <th >Text</th>
-                      <th >Address</th>
-                    </tr>
-                    
-                    
-                    
-                  </table>
+                <table  id = "listtable" style="width:100%"></table>
             </div>
 
         </div>
@@ -125,6 +116,7 @@
                 console.log('Please connect to MetaMask.');
             } else if (accounts[0] !== currentAccount) {
                 currentAccount = accounts[0];
+                listRespones();
                 // Do any other work!
             }
         }
@@ -193,29 +185,34 @@
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
+		"inputs": [],
+		"name": "ResponesData",
+		"outputs": [
 			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "text",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "time",
-				"type": "string"
+				"components": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "text",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "time",
+						"type": "string"
+					}
+				],
+				"internalType": "struct SmartContracts.Respones[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
-		"name": "Respones",
-		"type": "event"
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -257,7 +254,7 @@
 ];
 
         async function loadContract() {
-            return await new window.web3.eth.Contract(abi, '0xB4a0065192E8c34CF59DF42296c71BB77C561e9E');
+            return await new window.web3.eth.Contract(abi, '0x5542D5e09c3aB4d99Ff575979377D329745a5E80');
         }
 
         async function load() {
@@ -271,18 +268,9 @@
             console.log(name,value);
             window.contract.methods.registration(name, datetime()).send({ from: currentAccount, value: value }, function (error, result) {
                 $("#result").html(result);
+                listRespones();
             });
-            window.contract.once('Respones', {}, function (error, event) {
-                if (!error) {
-                    console.log(event);
-                    $("#result").html("name : "+event.returnValues.from + " " + event.returnValues.text + " " + event.returnValues.time);
-                    $("#listtable").append("<tr class = 'col2'>" +
-                        "<td>" + event.returnValues.time + "</td>" +
-                        "<td>" + event.returnValues.text+ "</td>" +
-                        "<td>" + event.returnValues.from + "</td>" +
-                        "</tr>");
-                }
-            });
+            
             window.contract.once('RegistrationError', {}, function (error, event) {
                 if (!error) {
                     console.log(event);
@@ -290,6 +278,20 @@
                 }
             });
         };
+        function listRespones(){
+            $("#listtable").html("<tr class='col'><th >Time</th><th >Text</th><th >Address</th></tr>");
+            window.contract.methods.ResponesData().call(function (error, result) {
+                if (!error) {
+                    result.forEach(element => {
+                        $("#listtable").append("<tr class = 'col2'>" +
+                        "<td>" + element.time + "</td>" +
+                        "<td>" + element.text+ "</td>" +
+                        "<td>" + element.from + "</td>" +
+                        "</tr>");
+                    });
+                }
+            });
+        }
 
         load();
     </script>

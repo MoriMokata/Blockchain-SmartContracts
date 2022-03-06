@@ -20,11 +20,12 @@ contract SmartContracts {
     string time
   );
 
-  event Respones(
-    address from,
-    string text,
-    string time
-  );
+  struct Respones{
+    address from;
+    string text;
+    string time;
+  }
+  Respones[] respones;
 
   // store the proof for a student in the contract state
   function recordProof(bytes32 proof) private {
@@ -46,7 +47,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }else if(keccak256(bytes(name))==keccak256(bytes("Vikasa Villa"))){
         if (msg.value != 0.002 ether) {
             //---fire the event---
@@ -56,7 +57,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }else if(keccak256(bytes(name))==keccak256(bytes("Sall Villa"))){
         if (msg.value != 0.003 ether) {
             //---fire the event---
@@ -66,7 +67,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }else if(keccak256(bytes(name))==keccak256(bytes("Serenity Villa"))){
         if (msg.value != 0.004 ether) {
             //---fire the event---
@@ -76,7 +77,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }else if(keccak256(bytes(name))==keccak256(bytes("Skydream Villa"))){
         if (msg.value != 0.005 ether) {
             //---fire the event---
@@ -86,7 +87,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }else if(keccak256(bytes(name))==keccak256(bytes("Elysian Villa"))){
         if (msg.value != 0.006 ether) {
             //---fire the event---
@@ -96,7 +97,7 @@ contract SmartContracts {
             //---exit the function---
             return;
         }
-        emit Respones(msg.sender, name, time);
+        respones.push(Respones(msg.sender, name, time));
     }
       
 
@@ -113,6 +114,10 @@ contract SmartContracts {
   function hashing(string memory name) private 
   pure returns (bytes32) {
     return sha256(bytes(name));
+  }
+
+  function ResponesData() public view returns(Respones[] memory){
+    return respones;
   }
   
   // check name of student in this class
