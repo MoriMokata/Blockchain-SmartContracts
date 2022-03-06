@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <!-- <script src="./node_modules/web3/dist/web3.min.js">
+    </script> -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <title>Blockchain</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="text">
+            <h3 >Hotel SmartContract</h1>
+        </div>
+        
+        <div class="grid1">
+            <div class="grid2">
+                <div class="content">
+                    <div class="c">Luxury Villa</div>
+                    <img src="image/luxury.jpg" alt="luxury" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Luxury Villa',1000000000000000)">Reserve ( 0.001 ETH )</button>
+                    </div>
+
+                </div>
+                <div class="content">
+                    <div class="c">Vikasa Villa</div>
+                    <img src="image/Vikasa.jpg" alt="Vikasa" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Vikasa Villa',2000000000000000)">Reserve ( 0.002 ETH )</button>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="c">Sall Villa</div>
+                    <img src="image/Sall.jpg" alt="Sall" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Sall Villa',3000000000000000)">Reserve ( 0.003 ETH )</button>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="c">Serenity Villa</div>
+                    <img src="image/Serenity.jpg" alt="Serenity" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Serenity Villa',4000000000000000)">Reserve ( 0.004 ETH )</button>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="c">Skydream Villa</div>
+                    <img src="image/skydream.jpg" alt="skydream" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Skydream Villa',5000000000000000)">Reserve ( 0.005 ETH )</button>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="c">Elysian Villa</div>
+                    <img src="image/elysian.jpg" alt="elysian" width="100%">
+                    <div class="button">
+                        <button id="Reserve" onclick="Reserve('Elysian Villa',6000000000000000)">Reserve ( 0.006 ETH )</button>
+                    </div>
+                </div>
+            </div>
+            <div class="content2">
+                <table  id = "listtable" style="width:100%">
+                    <tr class="col">
+                      <th >Time</th>
+                      <th >Text</th>
+                      <th >Address</th>
+                    </tr>
+                    
+                    
+                    
+                  </table>
+            </div>
+
+        </div>
+    </div>
+ 
+
+
+    <script>
+        function datetime() {
+            var dt = new Date();
+            var datetime = (("0" + (dt.getMonth() + 1)).slice(-2)) + "/" + (("0" + dt.getDate()).slice(-2)) + "/" + (dt.getFullYear()) + " " + (dt.getHours() + ":" + (dt.getMinutes()));
+            return datetime
+        }
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js">
+    </script>
+    <script>
+
+        async function loadWeb3() {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                window.ethereum.enable();
+            }
+        }
+
+        let currentAccount = null;
+        window.ethereum
+            .request({ method: 'eth_accounts' })
+            .then(handleAccountsChanged)
+            .catch((err) => {
+                // Some unexpected error.
+                // For backwards compatibility reasons, if no accounts are available,
+                // eth_accounts will return an empty array.
+                console.error(err);
+            });
+
+        // Note that this event is emitted on page load.
+        // If the array of accounts is non-empty, you're already
+        // connected.
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+        // For now, 'eth_accounts' will continue to always return an array
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // MetaMask is locked or the user has not connected any accounts
+                console.log('Please connect to MetaMask.');
+            } else if (accounts[0] !== currentAccount) {
+                currentAccount = accounts[0];
+                // Do any other work!
+            }
+        }
+
+        let abi = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "text",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "time",
+				"type": "string"
+			}
+		],
+		"name": "AddedTx",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "text",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "reason",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "time",
+				"type": "string"
+			}
+		],
+		"name": "RegistrationError",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "text",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "time",
+				"type": "string"
+			}
+		],
+		"name": "Respones",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "checkName",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "time",
+				"type": "string"
+			}
+		],
+		"name": "registration",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	}
+];
+
+        async function loadContract() {
+            return await new window.web3.eth.Contract(abi, '0xB4a0065192E8c34CF59DF42296c71BB77C561e9E');
+        }
+
+        async function load() {
+            await loadWeb3();
+            window.contract = await loadContract();
+
+        }
+
+        function Reserve(name,value) {
+            console.log(currentAccount);
+            console.log(name,value);
+            window.contract.methods.registration(name, datetime()).send({ from: currentAccount, value: value }, function (error, result) {
+                $("#result").html(result);
+            });
+            window.contract.once('Respones', {}, function (error, event) {
+                if (!error) {
+                    console.log(event);
+                    $("#result").html("name : "+event.returnValues.from + " " + event.returnValues.text + " " + event.returnValues.time);
+                    $("#listtable").append("<tr class = 'col2'>" +
+                        "<td>" + event.returnValues.time + "</td>" +
+                        "<td>" + event.returnValues.text+ "</td>" +
+                        "<td>" + event.returnValues.from + "</td>" +
+                        "</tr>");
+                }
+            });
+            window.contract.once('RegistrationError', {}, function (error, event) {
+                if (!error) {
+                    console.log(event);
+                    $("#result").html("Error: " + event.returnValues.text + "<br/>Reason: " + event.returnValues.reason);
+                }
+            });
+        };
+
+        load();
+    </script>
+
+</body>
+
+</html>
